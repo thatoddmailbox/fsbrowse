@@ -34,8 +34,19 @@ func (h *handler) serveDir(dir fs.File, w http.ResponseWriter) {
 }
 
 func (h *handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	dir, err := h.root.Open(".")
+	path := r.URL.Path
+	if len(path) > 0 && path[0] == '/' {
+		path = path[1:]
+	}
+
+	dir, err := h.root.Open(path)
 	if err != nil {
+		if err == fs.ErrNotExist {
+			w.WriteHeader(404)
+			w.Write([]byte("file not found"))
+			return
+		}
+
 		panic(err)
 	}
 
