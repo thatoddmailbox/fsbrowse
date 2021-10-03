@@ -18,8 +18,8 @@
 			{{ range .direntries }}
 			<tr>
 				<td>
-					<a href="{{ .Name }}">
-						{{ .Name }}
+					<a href="{{ .Name }}{{ if .IsDir }}/{{ end }}">
+						{{ .Name }}{{ if .IsDir }}/{{ end }}
 					</a>
 				</td>
 				<td>{{ .Info.Size }}</td>
