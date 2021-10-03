@@ -23,13 +23,12 @@ func (h *handler) serveDir(dir fs.File, w http.ResponseWriter) {
 		return
 	}
 
-	w.Header().Set("Content-Type", "text/html; charset=utf-8")
-
 	direntries, err := d.ReadDir(0)
 	if err != nil {
 		panic(err)
 	}
 
+	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 	h.dirTemplate.Execute(w, direntries)
 }
 
