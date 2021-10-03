@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"sort"
 	"strconv"
+	"strings"
 )
 
 //go:embed dir.html
@@ -19,7 +20,7 @@ type handler struct {
 	dirTemplate *template.Template
 }
 
-func (h *handler) serveDir(dir fs.File, s fs.FileInfo, w http.ResponseWriter) {
+func (h *handler) serveDir(dir fs.File, s fs.FileInfo, pathParts []string, w http.ResponseWriter) {
 	d, ok := dir.(fs.ReadDirFile)
 	if !ok {
 		w.Write([]byte("file does not readdir"))
@@ -39,6 +40,7 @@ func (h *handler) serveDir(dir fs.File, s fs.FileInfo, w http.ResponseWriter) {
 	h.dirTemplate.Execute(w, map[string]interface{}{
 		"dir":        s,
 		"direntries": direntries,
+		"pathParts":  pathParts,
 	})
 }
 
@@ -47,6 +49,11 @@ func (h *handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	if len(path) > 0 && path[0] == '/' {
 		path = path[1:]
 	}
+	if strings.HasSuffix(path, "/") {
+		path = path[:len(path)-1]
+	}
+
+	pathParts := strings.Split(path, "/")
 
 	f, err := h.root.Open(path)
 	if err != nil {
@@ -67,7 +74,7 @@ func (h *handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if s.IsDir() {
-		h.serveDir(f, s, w)
+		h.serveDir(f, s, pathParts, w)
 		return
 	}
 
