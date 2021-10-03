@@ -1,8 +1,25 @@
 <h1>{{ .dir.Name }}</h1>
 
-<ul>
-{{ if ne .dir.Name "" }}<li><a href="..">..</a></li>{{ end }}
-{{ range .direntries }}
-<li><a href="{{ .Name }}">{{ .Name }}</a></li>
-{{ end }}
-</ul>
+<table>
+	<thead>
+		<tr>
+			<th>Name</th>
+			<th>Size</th>
+			<th>Modified</th>
+		</tr>
+	</thead>
+	<tbody>
+		{{ if ne .dir.Name "" }}<tr>
+			<td><a href="..">..</a></td>
+			<td></td>
+			<td></td>
+		</tr>{{ end }}
+		{{ range .direntries }}
+		<tr>
+			<td><a href="{{ .Name }}">{{ .Name }}</a></td>
+			<td>{{ .Info.Size }}</td>
+			<td>{{ .Info.ModTime }}</td>
+		</tr>
+		{{ end }}
+	</tbody>
+</table>
