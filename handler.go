@@ -17,8 +17,20 @@ type handler struct {
 }
 
 func (h *handler) serveDir(dir fs.File, w http.ResponseWriter) {
+	d, ok := dir.(fs.ReadDirFile)
+	if !ok {
+		w.Write([]byte("file does not readdir"))
+		return
+	}
+
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
-	h.dirTemplate.Execute(w, dir)
+
+	direntries, err := d.ReadDir(0)
+	if err != nil {
+		panic(err)
+	}
+
+	h.dirTemplate.Execute(w, direntries)
 }
 
 func (h *handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
