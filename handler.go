@@ -7,6 +7,7 @@ import (
 	"io/fs"
 	"net/http"
 	"sort"
+	"strconv"
 )
 
 //go:embed dir.html
@@ -80,7 +81,18 @@ func (h *handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 }
 
 func FileServer(root fs.FS) http.Handler {
-	dirTemplate, err := template.New("dir").Parse(dirTemplateSource)
+	dirTemplate, err := template.New("dir").Funcs(template.FuncMap{
+		"formatSize": func(s int64) string {
+			prefixes := []string{"", "K", "M", "G", "T"}
+			prefix := 0
+			for s > 1000 && prefix < len(prefixes)-1 {
+				s /= 1000
+				prefix++
+			}
+
+			return strconv.FormatInt(s, 10) + " " + prefixes[prefix] + "B"
+		},
+	}).Parse(dirTemplateSource)
 	if err != nil {
 		panic(err)
 	}
