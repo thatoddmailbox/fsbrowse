@@ -1,25 +1,56 @@
-<h1>{{ .dir.Name }}</h1>
+<div id="container">
+	<h1>{{ .dir.Name }}</h1>
 
-<table>
-	<thead>
-		<tr>
-			<th>Name</th>
-			<th>Size</th>
-			<th>Modified</th>
-		</tr>
-	</thead>
-	<tbody>
-		{{ if ne .dir.Name "" }}<tr>
-			<td><a href="..">..</a></td>
-			<td></td>
-			<td></td>
-		</tr>{{ end }}
-		{{ range .direntries }}
-		<tr>
-			<td><a href="{{ .Name }}">{{ .Name }}</a></td>
-			<td>{{ .Info.Size }}</td>
-			<td>{{ .Info.ModTime }}</td>
-		</tr>
-		{{ end }}
-	</tbody>
-</table>
+	<table>
+		<thead>
+			<tr>
+				<th>Name</th>
+				<th>Size</th>
+				<th>Modified</th>
+			</tr>
+		</thead>
+		<tbody>
+			{{ if ne .dir.Name "" }}<tr>
+				<td><a href="..">..</a></td>
+				<td></td>
+				<td></td>
+			</tr>{{ end }}
+			{{ range .direntries }}
+			<tr>
+				<td>
+					<a href="{{ .Name }}">
+						{{ .Name }}
+					</a>
+				</td>
+				<td>{{ .Info.Size }}</td>
+				<td>{{ .Info.ModTime }}</td>
+			</tr>
+			{{ end }}
+		</tbody>
+	</table>
+</div>
+
+<style>
+	html, body {
+		font-family: Lato, sans-serif;
+		margin: 0;
+		padding: 0.75rem 0;
+	}
+
+	#container {
+		width: 960px;
+		margin: 0 auto;
+	}
+
+	h1 {
+		margin-top: 0;
+	}
+
+	table {
+		width: 100%;
+	}
+
+	table thead th {
+		text-align: left;
+	}
+</style>
