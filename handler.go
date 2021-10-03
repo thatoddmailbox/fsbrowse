@@ -17,7 +17,7 @@ type handler struct {
 	dirTemplate *template.Template
 }
 
-func (h *handler) serveDir(dir fs.File, w http.ResponseWriter) {
+func (h *handler) serveDir(dir fs.File, s fs.FileInfo, w http.ResponseWriter) {
 	d, ok := dir.(fs.ReadDirFile)
 	if !ok {
 		w.Write([]byte("file does not readdir"))
@@ -30,7 +30,10 @@ func (h *handler) serveDir(dir fs.File, w http.ResponseWriter) {
 	}
 
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
-	h.dirTemplate.Execute(w, direntries)
+	h.dirTemplate.Execute(w, map[string]interface{}{
+		"dir":        s,
+		"direntries": direntries,
+	})
 }
 
 func (h *handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
