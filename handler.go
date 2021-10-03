@@ -6,6 +6,7 @@ import (
 	"io"
 	"io/fs"
 	"net/http"
+	"sort"
 )
 
 //go:embed dir.html
@@ -28,6 +29,10 @@ func (h *handler) serveDir(dir fs.File, s fs.FileInfo, w http.ResponseWriter) {
 	if err != nil {
 		panic(err)
 	}
+
+	sort.Slice(direntries, func(i, j int) bool {
+		return direntries[i].Name() < direntries[j].Name()
+	})
 
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 	h.dirTemplate.Execute(w, map[string]interface{}{
