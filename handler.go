@@ -3,6 +3,7 @@ package fsbrowse
 import (
 	_ "embed"
 	"html/template"
+	"io"
 	"io/fs"
 	"net/http"
 )
@@ -38,7 +39,7 @@ func (h *handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		path = path[1:]
 	}
 
-	dir, err := h.root.Open(path)
+	f, err := h.root.Open(path)
 	if err != nil {
 		if err == fs.ErrNotExist {
 			w.WriteHeader(404)
@@ -49,8 +50,24 @@ func (h *handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		panic(err)
 	}
 
-	defer dir.Close()
-	h.serveDir(dir, w)
+	defer f.Close()
+
+	s, err := f.Stat()
+	if err != nil {
+		panic(err)
+	}
+
+	if s.IsDir() {
+		h.serveDir(f, w)
+	}
+
+	rs, ok := f.(io.ReadSeeker)
+	if !ok {
+		w.Write([]byte("fs file does not support Seek"))
+		return
+	}
+
+	http.ServeContent(w, r, s.Name(), s.ModTime(), rs)
 }
 
 func FileServer(root fs.FS) http.Handler {
