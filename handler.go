@@ -58,7 +58,8 @@ func (h *handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if s.IsDir() {
-		h.serveDir(f, w)
+		h.serveDir(f, s, w)
+		return
 	}
 
 	rs, ok := f.(io.ReadSeeker)
