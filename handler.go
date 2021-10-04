@@ -58,6 +58,10 @@ func (h *handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	pathParts := strings.Split(path, "/")
 
+	if len(path) == 0 {
+		path = "."
+	}
+
 	f, err := h.root.Open(path)
 	if err != nil {
 		if err == fs.ErrNotExist {
