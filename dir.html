@@ -24,7 +24,7 @@
 						{{ .Name }}{{ if .IsDir }}/{{ end }}
 					</a>
 				</td>
-				<td>{{ .Info.Size | formatSize }}</td>
+				<td>{{ if not .IsDir }}{{ .Info.Size | formatSize }}{{ end }}</td>
 				<td>{{ .Info.ModTime }}</td>
 			</tr>
 			{{ end }}
