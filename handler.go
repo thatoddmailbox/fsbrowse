@@ -37,11 +37,14 @@ func (h *handler) serveDir(dir fs.File, s fs.FileInfo, pathParts []string, w htt
 	})
 
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
-	h.dirTemplate.Execute(w, map[string]interface{}{
+	err = h.dirTemplate.Execute(w, map[string]interface{}{
 		"dir":        s,
 		"direntries": direntries,
 		"pathParts":  pathParts,
 	})
+	if err != nil {
+		panic(err)
+	}
 }
 
 func (h *handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
