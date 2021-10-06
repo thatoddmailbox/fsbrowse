@@ -2,6 +2,7 @@ package fsbrowse
 
 import (
 	_ "embed"
+	"errors"
 	"html/template"
 	"io"
 	"io/fs"
@@ -64,7 +65,7 @@ func (h *handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	f, err := h.root.Open(path)
 	if err != nil {
-		if err == fs.ErrNotExist {
+		if errors.Is(err, fs.ErrNotExist) {
 			w.WriteHeader(404)
 			w.Write([]byte("file not found"))
 			return
