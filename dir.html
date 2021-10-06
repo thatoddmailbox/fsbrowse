@@ -25,7 +25,7 @@
 					</a>
 				</td>
 				<td>{{ if not .IsDir }}{{ .Info.Size | formatSize }}{{ end }}</td>
-				<td>{{ .Info.ModTime }}</td>
+				<td>{{ .Info.ModTime | formatTime }}</td>
 			</tr>
 			{{ end }}
 		</tbody>

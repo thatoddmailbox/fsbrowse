@@ -10,6 +10,7 @@ import (
 	"sort"
 	"strconv"
 	"strings"
+	"time"
 )
 
 //go:embed dir.html
@@ -106,6 +107,9 @@ func FileServer(root fs.FS) http.Handler {
 			}
 
 			return strconv.FormatInt(s, 10) + " " + prefixes[prefix] + "B"
+		},
+		"formatTime": func(t time.Time) string {
+			return t.Format("2006-01-02 15:04:05 -0700 MST")
 		},
 	}).Parse(dirTemplateSource)
 	if err != nil {
