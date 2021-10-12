@@ -1,5 +1,4 @@
-# fsbrowse
-[![Build](https://github.com/thatoddmailbox/fsbrowse/actions/workflows/build.yml/badge.svg)](https://github.com/thatoddmailbox/fsbrowse/actions/workflows/build.yml)
+# fsbrowse [![Build](https://github.com/thatoddmailbox/fsbrowse/actions/workflows/build.yml/badge.svg)](https://github.com/thatoddmailbox/fsbrowse/actions/workflows/build.yml)
 
 ![Screenshot](./fsbrowse.png)
 
