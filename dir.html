@@ -20,7 +20,7 @@
 			{{ range .direntries }}
 			<tr>
 				<td>
-					<a href="{{ .Name }}{{ if .IsDir }}/{{ end }}">
+					<a href="{{ prefix }}{{ .Name }}{{ if .IsDir }}/{{ end }}">
 						{{ .Name }}{{ if .IsDir }}/{{ end }}
 					</a>
 				</td>

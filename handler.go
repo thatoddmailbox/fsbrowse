@@ -20,6 +20,12 @@ type handler struct {
 	root fs.FS
 
 	dirTemplate *template.Template
+
+	prefix string
+}
+
+type Options struct {
+	Prefix string
 }
 
 func (h *handler) serveDir(dir fs.File, s fs.FileInfo, pathParts []string, w http.ResponseWriter) {
@@ -43,6 +49,7 @@ func (h *handler) serveDir(dir fs.File, s fs.FileInfo, pathParts []string, w htt
 		"dir":        s,
 		"direntries": direntries,
 		"pathParts":  pathParts,
+		"prefix":     h.prefix,
 	})
 	if err != nil {
 		panic(err)
@@ -96,7 +103,7 @@ func (h *handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	http.ServeContent(w, r, s.Name(), s.ModTime(), rs)
 }
 
-func FileServer(root fs.FS) http.Handler {
+func FileServerWithOptions(root fs.FS, options Options) http.Handler {
 	dirTemplate, err := template.New("dir").Funcs(template.FuncMap{
 		"formatSize": func(s int64) string {
 			prefixes := []string{"", "K", "M", "G", "T"}
@@ -111,14 +118,23 @@ func FileServer(root fs.FS) http.Handler {
 		"formatTime": func(t time.Time) string {
 			return t.Format("2006-01-02 15:04:05 -0700 MST")
 		},
+		"prefix": func() string {
+			return options.Prefix
+		},
 	}).Parse(dirTemplateSource)
 	if err != nil {
 		panic(err)
 	}
 
 	return &handler{
-		root: root,
-
+		root:        root,
 		dirTemplate: dirTemplate,
+		prefix:      options.Prefix,
 	}
+}
+
+func FileServer(root fs.FS) http.Handler {
+	return FileServerWithOptions(root, Options{
+		Prefix: "",
+	})
 }
