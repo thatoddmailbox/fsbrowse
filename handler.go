@@ -50,7 +50,7 @@ func serveDir(dir fs.File, s fs.FileInfo, pathParts []string, w http.ResponseWri
 		"dir":        s,
 		"direntries": direntries,
 		"pathParts":  pathParts,
-		"notice":     notice,
+		"notice":     template.HTML(notice),
 		"prefix":     prefix,
 	})
 	if err != nil {
