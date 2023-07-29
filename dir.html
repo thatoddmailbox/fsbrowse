@@ -1,3 +1,9 @@
+{{ if notice }}
+<div id="notice">
+	{{ notice }}
+</div>
+{{ end }}
+
 <div id="container">
 	<div id="path">
 		{{ range .pathParts }}<span>/</span><span>{{.}}</span>{{end}}
@@ -36,12 +42,18 @@
 	html, body {
 		font-family: Lato, sans-serif;
 		margin: 0;
-		padding: 0.75rem 0;
+	}
+
+	#notice {
+		background: #eeeeee;
+		text-align: center;
+		padding: 0.25rem 0;
 	}
 
 	#container {
 		width: 960px;
 		margin: 0 auto;
+		padding: 1rem 0;
 	}
 
 	#path {

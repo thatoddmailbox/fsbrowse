@@ -26,6 +26,7 @@ type handler struct {
 
 type Options struct {
 	Prefix string
+	Notice string
 }
 
 func (h *handler) serveDir(dir fs.File, s fs.FileInfo, pathParts []string, w http.ResponseWriter) {
@@ -118,6 +119,9 @@ func FileServerWithOptions(root fs.FS, options Options) http.Handler {
 		"formatTime": func(t time.Time) string {
 			return t.Format("2006-01-02 15:04:05 -0700 MST")
 		},
+		"notice": func() string {
+			return options.Notice
+		},
 		"prefix": func() string {
 			return options.Prefix
 		},
@@ -136,5 +140,6 @@ func FileServerWithOptions(root fs.FS, options Options) http.Handler {
 func FileServer(root fs.FS) http.Handler {
 	return FileServerWithOptions(root, Options{
 		Prefix: "",
+		Notice: "",
 	})
 }
