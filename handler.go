@@ -15,11 +15,10 @@ import (
 
 //go:embed dir.html
 var dirTemplateSource string
+var dirTemplate *template.Template
 
 type handler struct {
 	root fs.FS
-
-	dirTemplate *template.Template
 
 	prefix string
 	notice string
@@ -47,7 +46,7 @@ func (h *handler) serveDir(dir fs.File, s fs.FileInfo, pathParts []string, w htt
 	})
 
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
-	err = h.dirTemplate.Execute(w, map[string]interface{}{
+	err = dirTemplate.Execute(w, map[string]interface{}{
 		"dir":        s,
 		"direntries": direntries,
 		"pathParts":  pathParts,
@@ -106,8 +105,13 @@ func (h *handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	http.ServeContent(w, r, s.Name(), s.ModTime(), rs)
 }
 
-func FileServerWithOptions(root fs.FS, options Options) http.Handler {
-	dirTemplate, err := template.New("dir").Funcs(template.FuncMap{
+func initTemplate() {
+	if dirTemplate != nil {
+		return
+	}
+
+	var err error
+	dirTemplate, err = template.New("dir").Funcs(template.FuncMap{
 		"formatSize": func(s int64) string {
 			prefixes := []string{"", "K", "M", "G", "T"}
 			prefix := 0
@@ -125,12 +129,15 @@ func FileServerWithOptions(root fs.FS, options Options) http.Handler {
 	if err != nil {
 		panic(err)
 	}
+}
+
+func FileServerWithOptions(root fs.FS, options Options) http.Handler {
+	initTemplate()
 
 	return &handler{
-		root:        root,
-		dirTemplate: dirTemplate,
-		prefix:      options.Prefix,
-		notice:      options.Notice,
+		root:   root,
+		prefix: options.Prefix,
+		notice: options.Notice,
 	}
 }
 
