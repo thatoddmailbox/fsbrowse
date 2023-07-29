@@ -1,6 +1,6 @@
-{{ if notice }}
+{{ if .notice }}
 <div id="notice">
-	{{ notice }}
+	{{ .notice }}
 </div>
 {{ end }}
 
@@ -26,7 +26,7 @@
 			{{ range .direntries }}
 			<tr>
 				<td>
-					<a href="{{ prefix }}{{ .Name }}{{ if .IsDir }}/{{ end }}">
+					<a href="{{ $.prefix }}{{ .Name }}{{ if .IsDir }}/{{ end }}">
 						{{ .Name }}{{ if .IsDir }}/{{ end }}
 					</a>
 				</td>

@@ -22,6 +22,7 @@ type handler struct {
 	dirTemplate *template.Template
 
 	prefix string
+	notice string
 }
 
 type Options struct {
@@ -50,6 +51,7 @@ func (h *handler) serveDir(dir fs.File, s fs.FileInfo, pathParts []string, w htt
 		"dir":        s,
 		"direntries": direntries,
 		"pathParts":  pathParts,
+		"notice":     h.notice,
 		"prefix":     h.prefix,
 	})
 	if err != nil {
@@ -119,12 +121,6 @@ func FileServerWithOptions(root fs.FS, options Options) http.Handler {
 		"formatTime": func(t time.Time) string {
 			return t.Format("2006-01-02 15:04:05 -0700 MST")
 		},
-		"notice": func() string {
-			return options.Notice
-		},
-		"prefix": func() string {
-			return options.Prefix
-		},
 	}).Parse(dirTemplateSource)
 	if err != nil {
 		panic(err)
@@ -134,6 +130,7 @@ func FileServerWithOptions(root fs.FS, options Options) http.Handler {
 		root:        root,
 		dirTemplate: dirTemplate,
 		prefix:      options.Prefix,
+		notice:      options.Notice,
 	}
 }
 
