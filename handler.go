@@ -29,7 +29,7 @@ type Options struct {
 	Notice string
 }
 
-func (h *handler) serveDir(dir fs.File, s fs.FileInfo, pathParts []string, w http.ResponseWriter) {
+func serveDir(dir fs.File, s fs.FileInfo, pathParts []string, w http.ResponseWriter, prefix string, notice string) {
 	d, ok := dir.(fs.ReadDirFile)
 	if !ok {
 		w.Write([]byte("file does not readdir"))
@@ -50,15 +50,15 @@ func (h *handler) serveDir(dir fs.File, s fs.FileInfo, pathParts []string, w htt
 		"dir":        s,
 		"direntries": direntries,
 		"pathParts":  pathParts,
-		"notice":     h.notice,
-		"prefix":     h.prefix,
+		"notice":     notice,
+		"prefix":     prefix,
 	})
 	if err != nil {
 		panic(err)
 	}
 }
 
-func (h *handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func doServeHTTP(w http.ResponseWriter, r *http.Request, root fs.FS, prefix string, notice string) {
 	path := r.URL.Path
 	if len(path) > 0 && path[0] == '/' {
 		path = path[1:]
@@ -73,7 +73,7 @@ func (h *handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		path = "."
 	}
 
-	f, err := h.root.Open(path)
+	f, err := root.Open(path)
 	if err != nil {
 		if errors.Is(err, fs.ErrNotExist) {
 			w.WriteHeader(404)
@@ -92,7 +92,7 @@ func (h *handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if s.IsDir() {
-		h.serveDir(f, s, pathParts, w)
+		serveDir(f, s, pathParts, w, prefix, notice)
 		return
 	}
 
@@ -103,6 +103,15 @@ func (h *handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 
 	http.ServeContent(w, r, s.Name(), s.ModTime(), rs)
+}
+
+func (h *handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	doServeHTTP(w, r, h.root, h.prefix, h.notice)
+}
+
+func ServeHTTPStateless(w http.ResponseWriter, r *http.Request, root fs.FS, prefix string, notice string) {
+	initTemplate()
+	doServeHTTP(w, r, root, prefix, notice)
 }
 
 func initTemplate() {
